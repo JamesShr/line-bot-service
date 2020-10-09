@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { NextFunction } from 'express';
 
-import { PathNotFoundError } from './all.exception';
+import { PathNotFoundError } from '@/errors/all.exception';
 
 @Catch(HttpException)
 export class NotfoundExceptionFilter implements ExceptionFilter {

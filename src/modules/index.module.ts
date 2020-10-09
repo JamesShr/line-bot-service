@@ -4,12 +4,12 @@ import { Module } from '@nestjs/common';
 // import { EyeModule } from './eye/eye.module';
 // import { GroupModule } from './group/group.module';
 // import { SampleModule } from './sample/sample.module';
-// import { ChatModule } from './chat/chat.module';
+import { EventModule } from '@/modules/event/enevt.module';
 import { MessageModule } from '@/modules/message/message.module';
 
 @Module({
   imports: [
-    // UserModule,
+    EventModule,
     // HeartModule,
     // EyeModule,
     // GroupModule,

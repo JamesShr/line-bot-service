@@ -2,8 +2,7 @@ import {
   ExceptionFilter, Catch, ArgumentsHost, HttpStatus, Logger,
 } from '@nestjs/common';
 
-
-import { ApplicationException, ErrorCode } from './all.exception';
+import { ApplicationException, ErrorCode } from '@/errors/all.exception';
 
 const { NODE_ENV } = process.env;
 const DEFAULT_ERROR_MESSAGE = 'The server is temporarily unable to service your request.';

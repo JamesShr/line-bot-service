@@ -1,53 +1,17 @@
 /* eslint-disable no-useless-return */
 import { Injectable, Logger, Inject } from '@nestjs/common';
-// import { UnknownError } from '@/errors/all.exception';
-import fetch from 'node-fetch';
 import { TYPES } from '@/types';
+import { LineApiService } from '@/services/line-api/line-api.service';
 import { RedisService } from '@/services/redis/redis.service';
-import { CHATBOT_TOKEN } from '@/env';
 import { UnknownError } from '@/errors/all.exception';
-
-type messageRequest = {
-  type: string;
-  id: number;
-  text: string;
-}
-
-type postbackRequest = {
-  data: string;
-}
+import { MessageDto, ReplyMessageDto } from '@/modules/message/dto/message.dto';
 
 export interface MessageService {
   handleMessage(
     userId: string,
     replyToken: string,
-    message: messageRequest,
+    message: MessageDto,
   ): Promise<any>;
-  handlePostback(
-    userId: string,
-    replyToken: string,
-    postback: postbackRequest,
-  ): Promise<any>;
-  handleLightId(
-    userId: string,
-    replyToken: string,
-    message: messageRequest,
-    redisData: any,
-  ): Promise<any>;
-  handlBrokenReasonId(
-    userId: string,
-    replyToken: string,
-    message: messageRequest,
-    redisData: any,
-  ): Promise<any>;
-  handlePhone(
-    userId: string,
-    replyToken: string,
-    message: messageRequest,
-    redisData: any,
-  ): Promise<any>;
-  // submit(lineId: string, lineName: string);
-  replyMessage(replyToken: string, defaultMessage: string): Promise<any | null>;
 }
 
 @Injectable()
@@ -55,134 +19,34 @@ export class MessageServiceImpl implements MessageService {
   constructor(
     @Inject(TYPES.RedisService)
     private readonly redis: RedisService,
+    @Inject(TYPES.LineApiService)
+    private readonly line: LineApiService,
   ) { }
 
   public async handleMessage(
     userId: string,
     replyToken: string,
-    message: messageRequest,
+    message: MessageDto,
   ): Promise<any> {
-    const redisResult = await this.redis.getRedisClient().getAsync(userId);
-    if (redisResult === null) {
-      await this.replyMessage(replyToken, '請使用圖文選單通報');
-    } else {
-      const redisData = JSON.parse(redisResult);
-      switch (redisData.step) {
-        case 'enterLightId':
-          await this.handleLightId(userId, replyToken, message, redisData);
-          break;
-        case 'enterBrokenReasonId':
-          await this.handlBrokenReasonId(userId, replyToken, message, redisData);
-          break;
-        case 'enterPhone':
-          await this.handlePhone(userId, replyToken, message, redisData);
-          break;
-        default:
-          break;
-      }
+    const returnMessage = [];
+    switch (message.type) {
+      default:
+        returnMessage.push({
+          type: 'text',
+          text: '?',
+        });
+        break;
     }
+    await this.replyMessage(replyToken, returnMessage);
   }
 
-  public async handleLightId(
-    userId: string,
-    replyToken: string,
-    message: messageRequest,
-    redisData: any,
-  ): Promise<any> {
-    // fetch api to search lightId
-    const userEnterId = message.text;
-  }
-
-  public async handlBrokenReasonId(
-    userId: string,
-    replyToken: string,
-    message: messageRequest,
-    redisData: any,
-  ): Promise<any> {
-    const updateRedisData = redisData;
-    const brokenTable = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '99'];
-    const result = brokenTable.findIndex((number: string) => number === message.text);
-    if (result === -1) {
-      try {
-        await this.replyMessage(replyToken, '故障代號錯誤，請輸入正確的故障代號');
-      } catch (error) {
-        throw new UnknownError(error);
-      }
-    } else {
-      updateRedisData.step = 'enterPhone';
-      updateRedisData.repairData.brokenreasonId = parseInt(message.text, 10);
-      await this.redis.getRedisClient().setAsync(userId, JSON.stringify(updateRedisData));
-      try {
-        await this.replyMessage(replyToken, '請輸入您的聯絡電話');
-      } catch (error) {
-        throw new UnknownError(error);
-      }
-    }
-  }
-
-  public async handlePhone(
-    userId: string,
-    replyToken: string,
-    message: messageRequest,
-    redisData: any,
-  ): Promise<any> {
-    const updateRedisData = redisData;
-    updateRedisData.repairData.reporterPhone = message.text;
-    // post api to taoyuan platform
-    const postBody = {
-      lihtId: updateRedisData.repairData.lightId,
-      brokenreasonid: updateRedisData.repairData.brokenreasonId,
-      reportername: updateRedisData.repairData.reporterName,
-      reporterphone: updateRedisData.repairData.reporterPhone,
-      streetlightid: updateRedisData.repairData.streetlightid,
-      distid: updateRedisData.repairData.distId,
-      villageid: updateRedisData.repairData.villageId,
-    };
-  }
-
-  public async handlePostback(
-    userId: string,
-    replyToken: string,
-    postback: postbackRequest,
-  ): Promise<any> {
-    if (postback.data === 'action=startCreateRepair') {
-      await this.redis.getRedisClient().setAsync(userId, JSON.stringify({
-        step: 'enterLightId',
-        repairData: {
-          lightId: '',
-          brokenreasonId: 0,
-          reporterName: userId,
-          reporterPhone: '',
-          streetlightid: 0,
-          distId: 0,
-          villageId: 0,
-        },
-      }));
-      await this.replyMessage(replyToken, '請輸入路燈編號');
-    }
-    return;
-  }
-
-  public async replyMessage(replyToken: string, defaultMessage: string): Promise<any> {
+  public async replyMessage(replyToken: string, defaultMessage: ReplyMessageDto[]): Promise<any> {
     try {
       const replyMessage = {
         replyToken,
-        messages: [
-          {
-            type: 'text',
-            text: defaultMessage,
-          },
-        ],
+        messages: defaultMessage,
       };
-
-      await fetch('https://api.line.me/v2/bot/message/reply', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${CHATBOT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(replyMessage),
-      });
+      await this.line.reply(JSON.stringify(replyMessage));
       return;
     } catch (error) {
       throw new UnknownError(error);

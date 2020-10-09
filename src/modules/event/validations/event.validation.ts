@@ -3,7 +3,7 @@ import {
   object, string, number, array,
 } from 'yup';
 
-export const LineRequestValidation = object().shape({
+export const EventsValidation = object().shape({
   events: array().of(object().shape({
     type: string().required(),
     replyToken: string().required(),
