@@ -390,4 +390,5 @@ Temporary Items
 .env
 dist
 documentation/
-# config/local
+
+config/local.js
