@@ -30,7 +30,7 @@ export class EventController {
       replyToken,
       message,
     } = body.events[0];
-    const { userId } = body.events[0].source;
+    const { userId, groupId } = body.events[0].source;
     Logger.log(body);
     switch (type) {
       case 'message':

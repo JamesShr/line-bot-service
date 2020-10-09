@@ -5,6 +5,7 @@ export interface EventsDto {
     type: string;
     replyToken: string;
     source: {
+      groupId?: string;
       userId: string;
       type: string;
     };
