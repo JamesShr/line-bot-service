@@ -1,0 +1,11 @@
+version: '2'
+services:
+  app:
+    scale: 1
+    start_on_create: true
+  database:
+    scale: 1
+    start_on_create: true
+  redis:
+    scale: 1
+    start_on_create: true

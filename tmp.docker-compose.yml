@@ -1,0 +1,37 @@
+version: '2'
+volumes:
+  db-data:
+    driver: local
+services:
+  app:
+    image: oring/taoyuan-streetlight-repair-chatbot:latest
+    environment:
+      - PG_HOST=database
+      - PG_PORT=5432
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - database
+      - redis
+    ports:
+    - 8107:8107/tcp
+    labels:
+      io.rancher.container.pull_image: always
+  database:
+    image: postgres:11.1
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_DB=db
+    volumes:
+    - db-data:/var/lib/postgresql/data
+    ports:
+    - 30679:5432/tcp
+    expose:
+    - '5432'
+  redis:
+    image: redis:latest
+    ports:
+    - 55688:55688/tcp
+    expose:
+    - '6379'
