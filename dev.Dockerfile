@@ -13,4 +13,4 @@ ADD . /app
 
 ENTRYPOINT ["sh", "./scripts/entry.sh" ]
 
-EXPOSE 8107
+EXPOSE 8108

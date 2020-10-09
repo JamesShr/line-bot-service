@@ -1,24 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TYPES } from '@/types';
-import { MessageController } from './message.controller';
-import { RepairRecord } from '@/entity/repairRecord.entity';
-import { MessageServiceImpl } from './message.service';
-import { RepairRecordRepositoryImpl } from './message.repository';
+import { MessageController } from '@/modules/message/message.controller';
+import { MessageServiceImpl } from '@/modules/message/message.service';
 
 const modules = [
   {
     provide: TYPES.MessageService,
     useClass: MessageServiceImpl,
   },
-  {
-    provide: TYPES.MessageRepository,
-    useClass: RepairRecordRepositoryImpl,
-  },
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RepairRecord])],
+  imports: [],
   controllers: [MessageController],
   providers: modules,
   exports: modules,

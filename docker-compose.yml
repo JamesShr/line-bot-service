@@ -6,7 +6,7 @@ services:
     image: redis:latest
     container_name: line-bot-service-redis
     ports:
-      - 60888:6379
+      - 9000:6379
     expose:
       - 6379
       
@@ -20,7 +20,7 @@ services:
     # volumes:
     #   - db-data:/var/lib/postgresql/data
     ports:
-      - "30679:5432"
+      - "10000:5432"
     expose:
       - "5432"
 
@@ -29,7 +29,7 @@ services:
       context: ./
       dockerfile: dev.Dockerfile
     # image: oring/taoyuan-streetlight-line-bot-service:latest
-    container_name: taoyuan-streetlight-line-bot-service
+    container_name: line-bot-service-app
     environment:
       - PG_HOST=database
       - PG_PORT=5432
@@ -41,7 +41,7 @@ services:
     volumes:
       - ./src:/app/src
     ports:
-      - 8107:8107 #app
+      - 8108:8108 #app
 
 # volumes:
 #   db-data:

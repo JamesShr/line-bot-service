@@ -5,7 +5,7 @@ import { Module } from '@nestjs/common';
 // import { GroupModule } from './group/group.module';
 // import { SampleModule } from './sample/sample.module';
 // import { ChatModule } from './chat/chat.module';
-import { MessageModule } from './message/message.module';
+import { MessageModule } from '@/modules/message/message.module';
 
 @Module({
   imports: [

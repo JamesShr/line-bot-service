@@ -4,5 +4,4 @@ export const TYPES = {
   MessageRepository: Symbol('MESSAGE_REPOSITORY'),
 
   RedisService: Symbol('REDIS_SERVICE'),
-  MQTTService: Symbol('MQTT_SERVICE'),
 };

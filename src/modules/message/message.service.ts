@@ -4,9 +4,8 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { TYPES } from '@/types';
 import { RedisService } from '@/services/redis/redis.service';
-import { CHATBOT_TOKEN, TAOYUAN_HOST } from '@/env';
+import { CHATBOT_TOKEN } from '@/env';
 import { UnknownError } from '@/errors/all.exception';
-import { RepairRecordRepository } from '@/modules/message/message.repository';
 
 type messageRequest = {
   type: string;
@@ -49,8 +48,6 @@ export interface MessageService {
   ): Promise<any>;
   // submit(lineId: string, lineName: string);
   replyMessage(replyToken: string, defaultMessage: string): Promise<any | null>;
-  searchStreetlightByLightId(poleCode: string): Promise<any | null>;
-  createNewRepair(postBody: any): Promise<any | null>;
 }
 
 @Injectable()
@@ -58,8 +55,6 @@ export class MessageServiceImpl implements MessageService {
   constructor(
     @Inject(TYPES.RedisService)
     private readonly redis: RedisService,
-    @Inject(TYPES.MessageRepository)
-    private readonly repairRecordRepository: RepairRecordRepository,
   ) { }
 
   public async handleMessage(
@@ -96,30 +91,6 @@ export class MessageServiceImpl implements MessageService {
   ): Promise<any> {
     // fetch api to search lightId
     const userEnterId = message.text;
-    const streetlightData = await this.searchStreetlightByLightId(userEnterId);
-    if (streetlightData.data === null) {
-      try {
-        await this.replyMessage(replyToken, '找不到此路燈編號，請再確認並輸入正確的路燈編號');
-      } catch (error) {
-        throw new UnknownError(error);
-      }
-    } else {
-      const updateRedisData = redisData;
-      updateRedisData.step = 'enterBrokenReasonId';
-      updateRedisData.repairData.lightId = streetlightData.PoleCode;
-      updateRedisData.repairData.streetlightid = streetlightData.lightID;
-      updateRedisData.repairData.distId = streetlightData.DistID || 0;
-      updateRedisData.repairData.villageId = streetlightData.VillageID || 0;
-      await this.redis.getRedisClient().setAsync(userId, JSON.stringify(updateRedisData));
-      try {
-        await this.replyMessage(
-          replyToken,
-          '請輸入故障原因代號(1~9,99)\n\n1.路燈不亮\n2.全天亮\n3.時亮時不亮\n4.整排路燈不亮\n5.漏電火花\n6.燈桿傾斜或折斷\n7.燈具損壞或不亮\n8.閃爍\n9.燈頭不見\n99.其他狀況',
-        );
-      } catch (error) {
-        throw new UnknownError(error);
-      }
-    }
   }
 
   public async handlBrokenReasonId(
@@ -167,36 +138,6 @@ export class MessageServiceImpl implements MessageService {
       distid: updateRedisData.repairData.distId,
       villageid: updateRedisData.repairData.villageId,
     };
-    const repairNum = await this.createNewRepair(postBody);
-    if (repairNum.result === 'success') {
-      // insert to db
-      const insertObj = {
-        repairId: repairNum.code,
-        userId: postBody.reportername,
-        streetlightId: postBody.streetlightid,
-        lightId: postBody.lihtId,
-        phone: postBody.reporterphone,
-        brokenReasonId: postBody.brokenreasonid,
-        distId: postBody.distid,
-        villageId: postBody.villageid,
-        address: '',
-      };
-      Logger.log(insertObj);
-      this.repairRecordRepository.createNewRepair(insertObj);
-      await this.redis.getRedisClient().delkeysAsync(userId);
-      try {
-        await this.replyMessage(replyToken, '報修單已建立，感謝您的通報');
-      } catch (error) {
-        throw new UnknownError(error);
-      }
-    } else {
-      await this.redis.getRedisClient().delkeysAsync(userId);
-      try {
-        await this.replyMessage(replyToken, '報修單建立失敗，請重新開始');
-      } catch (error) {
-        throw new UnknownError(error);
-      }
-    }
   }
 
   public async handlePostback(
@@ -243,37 +184,6 @@ export class MessageServiceImpl implements MessageService {
         body: JSON.stringify(replyMessage),
       });
       return;
-    } catch (error) {
-      throw new UnknownError(error);
-    }
-  }
-
-  public async searchStreetlightByLightId(poleCode: string): Promise<any | null> {
-    try {
-      const result = await fetch(`${TAOYUAN_HOST}/openApi/light/getLightDetail?poleCode=${poleCode}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const streetlight = await result.json();
-      return streetlight;
-    } catch (error) {
-      throw new UnknownError(error);
-    }
-  }
-
-  public async createNewRepair(postBody): Promise<any | null> {
-    try {
-      const result = await fetch(`${TAOYUAN_HOST}/openApi/maintain/newRepair`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postBody),
-      });
-      const repairNum = await result.json();
-      return repairNum;
     } catch (error) {
       throw new UnknownError(error);
     }

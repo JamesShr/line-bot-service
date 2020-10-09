@@ -4,10 +4,6 @@ module.exports = {
       __name: 'HTTP_PORT',
       __format: 'json',
     },
-    SOCKET: {
-      __name: 'SOCKET_PORT',
-      __format: 'json',
-    },
   },
   postgres: {
     host: 'PG_HOST',
@@ -34,15 +30,6 @@ module.exports = {
       __format: 'json',
     },
     password: 'REDIS_PASSWORD',
-  },
-  mqtt: {
-    host: 'MQTT_HOST',
-    port: {
-      __name: 'MQTT_PORT',
-      __format: 'json',
-    },
-    subscribe: 'MQTT_SUB_TOPIC',
-    publish: 'MQTT_PUB_TOPIC',
   },
   chatbot: {
     channelId: 'CHATBOT_ID',

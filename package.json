@@ -1,5 +1,5 @@
 {
-  "name": "taoyuan-streetlight-repair-chatbot",
+  "name": "line-bot-service",
   "private": true,
   "version": "1.0.0",
   "description": "taoyuan streetlight repair chatbot",
@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:dev:docker": "docker-compose -p taoyuan-streetlight-repair-chatbot up --build",
+    "start:dev:docker": "docker-compose -p line-bot-service up --build",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "tslint -p tsconfig.json -c tslint.json",
