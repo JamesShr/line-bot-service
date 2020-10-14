@@ -1,7 +1,7 @@
 import config from 'config';
 
 export const HTTP_PORT = config.get('port.http') as number;
-export const SOCKET_PORT = config.get('port.socket') as number;
+export const WEB_HOST = config.get('client.host') as string;
 
 export const REDIS_HOST = config.get('redis.host') as string;
 export const REDIS_PORT = config.get('redis.port') as number;

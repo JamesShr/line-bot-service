@@ -1,4 +1,5 @@
 import { MessageDto } from '@/modules/message/dto/message.dto';
+import { ThingEventDto } from '@/modules/thing/dto/thing.dto';
 
 export interface EventsDto {
   events: {
@@ -12,6 +13,15 @@ export interface EventsDto {
     timestamp: number;
     mode: string;
     message: MessageDto;
+    things: ThingEventDto;
   }[];
   destination: string;
+}
+
+export interface UserProfileDto {
+  userId: string;
+  displayName: string;
+  pictureUrl: string;
+  statusMessage: string;
+  language: string;
 }

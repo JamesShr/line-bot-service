@@ -5,17 +5,20 @@ import { Module } from '@nestjs/common';
 // import { GroupModule } from './group/group.module';
 // import { SampleModule } from './sample/sample.module';
 import { EventModule } from '@/modules/event/enevt.module';
+import { WebClientModule } from '@/modules/web-client/web-client.module';
 import { MessageModule } from '@/modules/message/message.module';
-
+import { ThingModule } from '@/modules/thing/thing.module';
 @Module({
   imports: [
     EventModule,
+    WebClientModule,
     // HeartModule,
     // EyeModule,
     // GroupModule,
     // SampleModule,
     // ChatModule,
     MessageModule,
+    ThingModule,
   ],
 })
 

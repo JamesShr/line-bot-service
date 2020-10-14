@@ -4,6 +4,7 @@ import { TYPES } from '@/types';
 import { EventController } from '@/modules/event/event.controller';
 import { EventServiceImpl } from '@/modules/event/event.service';
 import { MessageModule } from '@/modules/message/message.module';
+import { ThingModule } from '@/modules/thing/thing.module';
 
 const modules = [
   {
@@ -15,6 +16,7 @@ const modules = [
 @Module({
   imports: [
     MessageModule,
+    ThingModule,
   ],
   controllers: [EventController],
   providers: modules,

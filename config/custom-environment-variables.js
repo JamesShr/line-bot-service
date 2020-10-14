@@ -5,6 +5,9 @@ module.exports = {
       __format: 'json',
     },
   },
+  client: {
+    host: 'WEB_HOST',
+  },
   postgres: {
     host: 'PG_HOST',
     port: {

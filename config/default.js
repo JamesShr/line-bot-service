@@ -2,6 +2,9 @@ module.exports = {
   port: {
     http: 0,
   },
+  client: {
+    host: '',
+  },
   postgres: {
     host: '',
     port: 0,

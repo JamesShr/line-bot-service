@@ -9,6 +9,7 @@ import { EventsDto } from '@/modules/event/dto/event.dto';
 import { EventsValidation } from '@/modules/event/validations/event.validation';
 import { EventService } from '@/modules/event/event.service';
 import { MessageService } from '@/modules/message/message.service';
+import { ThingService } from '@/modules/thing/thing.service';
 
 @Controller('/event')
 @UseInterceptors(OkInterceptor)
@@ -18,6 +19,8 @@ export class EventController {
     private readonly eventService: EventService,
     @Inject(TYPES.MessageService)
     private readonly messageService: MessageService,
+    @Inject(TYPES.ThingService)
+    private readonly thingService: ThingService,
   ) { }
 
   @Post()
@@ -29,12 +32,16 @@ export class EventController {
       type,
       replyToken,
       message,
+      things,
     } = body.events[0];
     const { userId, groupId } = body.events[0].source;
     Logger.log(body);
     switch (type) {
       case 'message':
         await this.messageService.handleMessage(userId, replyToken, message);
+        break;
+      case 'things':
+        await this.thingService.handleEvent(userId, replyToken, things);
         break;
       default:
         break;
