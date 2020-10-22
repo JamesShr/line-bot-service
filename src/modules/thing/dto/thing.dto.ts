@@ -89,32 +89,7 @@ export interface LineThings {
     serviceUuid: string;
     psdiServiceUuid: string;
     psdiCharacteristicUuid: string;
-    items: {
-      userId: string;
-      device: {
-        id: string;
-        productId: string;
-      };
-    }[];
-    scenario: {
-      productId: string;
-      autoClose: boolean;
-      suppressionInterval: number;
-      revision: number;
-      scenarios: {
-        id: string;
-        trigger: {
-          type: string;
-        };
-        actions: {
-          type: string;
-          serviceUuid: string;
-          characteristicUuid: string;
-          data?: string;
-        }[];
-      }[];
-      createdAt: string;
-      updatedAt: string;
-    };
+    devices: DeviceListDto;
+    scenario: ScenarioDto;
   }[];
 }
