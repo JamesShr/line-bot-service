@@ -9,8 +9,8 @@ import { YupValidationPipe } from '@/modules/common/pipes/yupValidation.pipe';
 import { ParseDtoPipe } from '@/modules/common/pipes/parseDto.pipe';
 import { ThingService } from '@/modules/thing/thing.service';
 import { authVerify } from '@/modules/common/auth-verify/auth-verify';
-import { UpdateScenarioDto } from '@/modules/web-client/dto/web-client.dto';
-import { updateScenarioValidation } from '@/modules/web-client/validations/web-client.validation';
+import { UpdateScenarioDto, SendCommandDto } from '@/modules/web-client/dto/web-client.dto';
+import { updateScenarioValidation, sendCommandValidation } from '@/modules/web-client/validations/web-client.validation';
 
 @Controller('/api')
 @UseInterceptors(OkInterceptor)
@@ -107,7 +107,7 @@ export class WebClientController {
     let productServiceUuid: string;
     productData.map((product) => {
       if (product.id === productId) {
-        productServiceUuid = product.psdiServiceUuid;
+        productServiceUuid = product.serviceUuid;
       }
       return product;
     });
@@ -153,5 +153,21 @@ export class WebClientController {
     );
     Logger.log(result);
     return {};
+  }
+
+  @Post('/device-command/:deviceId')
+  public async sendCommand(
+    @Headers() headers, @Param('deviceId') deviceId: string,
+    @Body(new YupValidationPipe(sendCommandValidation)) body: SendCommandDto,
+  ): Promise<any> {
+    const userData = authVerify.findUser({}, headers);
+    Logger.log({
+      user: userData.userId,
+      device: deviceId,
+      command: body.value,
+    });
+    return {
+      message: 'success',
+    };
   }
 }

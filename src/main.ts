@@ -10,7 +10,7 @@ import { HTTP_PORT, WEB_HOST } from '@/env';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: {
-      origin: [WEB_HOST],
+      origin: [WEB_HOST, 'https://james-liff-page.herokuapp.com'],
       credentials: true,
     },
   });

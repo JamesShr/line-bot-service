@@ -9,6 +9,7 @@ import { EventsDto } from '@/modules/event/dto/event.dto';
 import { EventsValidation } from '@/modules/event/validations/event.validation';
 import { EventService } from '@/modules/event/event.service';
 import { MessageService } from '@/modules/message/message.service';
+import { PostbackService } from '@/modules/postback/postback.service';
 import { ThingService } from '@/modules/thing/thing.service';
 
 @Controller('/event')
@@ -19,6 +20,8 @@ export class EventController {
     private readonly eventService: EventService,
     @Inject(TYPES.MessageService)
     private readonly messageService: MessageService,
+    @Inject(TYPES.PostbackService)
+    private readonly postbackService: PostbackService,
     @Inject(TYPES.ThingService)
     private readonly thingService: ThingService,
   ) { }
@@ -27,18 +30,21 @@ export class EventController {
   public async router(
     @Request() req, @Body(new YupValidationPipe(EventsValidation)) body: EventsDto,
   ): Promise<void> {
-    // Logger.log(req.headers);
     const {
       type,
       replyToken,
       message,
       things,
+      postback,
     } = body.events[0];
     const { userId, groupId } = body.events[0].source;
     Logger.log(body);
     switch (type) {
       case 'message':
         await this.messageService.handleMessage(userId, replyToken, message);
+        break;
+      case 'postback':
+        await this.postbackService.handlePostback(userId, replyToken, postback);
         break;
       case 'things':
         await this.thingService.handleEvent(userId, replyToken, things);

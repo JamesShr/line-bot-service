@@ -34,6 +34,10 @@ export class MessageServiceImpl implements MessageService {
         returnMessage.push({
           type: 'text',
           text: '?',
+          sender: {
+            name: 'Cony',
+            iconUrl: 'https://line.me/conyprof',
+          },
         });
         break;
     }

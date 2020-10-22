@@ -7,3 +7,8 @@ export const updateScenarioValidation = object().shape({
   ssid: string().required(),
   password: string().required(),
 });
+
+export const sendCommandValidation = object().shape({
+  lanIp: string().required(),
+  value: number().required(),
+});

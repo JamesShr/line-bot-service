@@ -9,6 +9,8 @@ export const TYPES = {
   MessageService: Symbol('MESSAGE_SERVICE'),
   MessageRepository: Symbol('MESSAGE_REPOSITORY'),
 
+  PostbackService: Symbol('POSTBACK_SERVICE'),
+
   LineApiService: Symbol('LINE_API_SERVICE'),
   RedisService: Symbol('REDIS_SERVICE'),
   SocketService: Symbol('SOCKET_SERVICE'),

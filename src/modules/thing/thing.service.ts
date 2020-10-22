@@ -48,44 +48,44 @@ export class ThingServiceImpl implements ThingService {
       case 'link':
         returnMessage.push({
           type: 'text',
-          text: `使用者 : ${userProfile.displayName} \n 操作 : 列入配對清單`,
+          text: `使用者 : ${userProfile.displayName} \n設備：${thing.deviceId} \n操作 : 列入配對清單`,
         });
         break;
       case 'connect':
         returnMessage.push({
           type: 'text',
-          text: `使用者 : ${userProfile.displayName} \n 操作 : 配對連線`,
+          text: `使用者 : ${userProfile.displayName} \n設備：${thing.deviceId} \n操作 : 配對連線`,
         });
         await this.createDeviceCache(thing);
         break;
       case 'disconnect':
         returnMessage.push({
           type: 'text',
-          text: `使用者 : ${userProfile.displayName} \n 操作 : 配對斷線`,
+          text: `使用者 : ${userProfile.displayName} \n設備：${thing.deviceId} \n操作 : 配對斷線`,
         });
         await this.deleteDeviceCache(thing);
         break;
       case 'unlink':
         returnMessage.push({
           type: 'text',
-          text: `使用者 : ${userProfile.displayName} \n 操作 : 移除配對清單`,
+          text: `使用者 : ${userProfile.displayName} \n設備：${thing.deviceId} \n操作 : 移除配對清單`,
         });
         break;
       case 'scenarioResult':
         returnMessage.push({
           type: 'text',
-          text: `使用者 : ${userProfile.displayName} \n 操作 : 設備操作`,
+          text: `使用者 : ${userProfile.displayName} \n操作 : 設備操作`,
         });
         const notifyData = await this.updateDeviceCache(thing) || '(連線獲得預設值)';
         returnMessage.push({
           type: 'text',
-          text: `設備回報 : ${notifyData}`,
+          text: `設備：${thing.deviceId} \n設備回報 : ${notifyData}`,
         });
         break;
       default:
         returnMessage.push({
           type: 'text',
-          text: `使用者 : ${userProfile.displayName} \n 操作 : 未知`,
+          text: `使用者 : ${userProfile.displayName} \n操作 : 未知`,
         });
         break;
     }
@@ -165,11 +165,11 @@ export class ThingServiceImpl implements ThingService {
       decodeMessage = Buffer.from(thing.result.bleNotificationPayload || '', 'base64').toString('ascii');
       const decodeData = decodeMessage.split(':');
       switch (decodeData[0]) {
-        case 'lanIp':
-          deviceData.lanIp = decodeData[1];
+        case 'LanIP':
+          deviceData.lanIp = `http://${decodeData[1].split('\r')[0]}`;
           break;
         case 'LED':
-          deviceData.led = decodeData[1];
+          deviceData.led = parseInt(decodeData[1], 10);
           break;
         case 'BTN':
           deviceData.buttonClick = decodeData[1];

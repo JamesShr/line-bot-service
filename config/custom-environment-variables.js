@@ -39,7 +39,7 @@ module.exports = {
     channelSecret: 'CHATBOT_SECRET',
     channelToken: 'CHATBOT_TOKEN',
   },
-  taoyuan: {
-    host: 'TAOYUAN_HOST',
+  notify: {
+    token: 'LINE_NOTIFY_TOKEN',
   },
 };

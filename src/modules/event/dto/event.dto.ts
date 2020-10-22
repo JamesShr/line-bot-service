@@ -1,5 +1,6 @@
 import { MessageDto } from '@/modules/message/dto/message.dto';
 import { ThingEventDto } from '@/modules/thing/dto/thing.dto';
+import { PostbackDto } from '@/modules/postback/dto/postback.dto';
 
 export interface EventsDto {
   events: {
@@ -14,6 +15,7 @@ export interface EventsDto {
     mode: string;
     message: MessageDto;
     things: ThingEventDto;
+    postback: PostbackDto;
   }[];
   destination: string;
 }
